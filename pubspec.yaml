@@ -1,5 +1,5 @@
 name: ht_countries_firestore
-description: A Very Good Project created by Very Good CLI.
+description: A Firestore implementation for the `ht_countries_client` interface.
 repository: https://github.com/headlines-toolkit/ht-countries-firestore
 publish_to: none
 

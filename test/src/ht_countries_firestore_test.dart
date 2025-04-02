@@ -47,7 +47,7 @@ void main() {
     ) {
       final mock = MockQueryDocumentSnapshot();
       when(() => mock.id).thenReturn(id);
-      when(() => mock.data()).thenReturn(data);
+      when(mock.data).thenReturn(data);
       when(() => mock.exists).thenReturn(true);
       return mock;
     }
@@ -59,7 +59,7 @@ void main() {
     }) {
       final mock = MockDocumentSnapshot();
       when(() => mock.id).thenReturn(id);
-      when(() => mock.data()).thenReturn(data);
+      when(mock.data).thenReturn(data);
       when(() => mock.exists).thenReturn(exists);
       return mock;
     }
@@ -76,9 +76,9 @@ void main() {
       when(() => mockQuery.limit(any())).thenReturn(mockQuery);
       when(() => mockQuery.where(any(), isEqualTo: any(named: 'isEqualTo')))
           .thenReturn(mockQuery);
-      when(() =>
-              mockQuery.where(any(), isNotEqualTo: any(named: 'isNotEqualTo')))
-          .thenReturn(mockQuery);
+      when(
+        () => mockQuery.where(any(), isNotEqualTo: any(named: 'isNotEqualTo')),
+      ).thenReturn(mockQuery);
 
       client = HtCountriesFirestore(
         firestore: mockFirestore,
@@ -94,17 +94,17 @@ void main() {
       final countryData1 = {
         'iso_code': 'US',
         'name': 'United States',
-        'flag_url': 'url1'
+        'flag_url': 'url1',
       };
       final countryData2 = {
         'iso_code': 'CA',
         'name': 'Canada',
-        'flag_url': 'url2'
+        'flag_url': 'url2',
       };
       final countryData3 = {
         'iso_code': 'MX',
         'name': 'Mexico',
-        'flag_url': 'url3'
+        'flag_url': 'url3',
       };
 
       final country1 = Country.fromJson({...countryData1, 'id': 'US'});
@@ -138,7 +138,7 @@ void main() {
 
         when(() => mockCollectionReference.doc('US'))
             .thenReturn(mockStartAfterDocRef);
-        when(() => mockStartAfterDocRef.get())
+        when(mockStartAfterDocRef.get)
             .thenAnswer((_) async => startAfterDocSnapshot);
 
         when(() => mockQuery.startAfterDocument(startAfterDocSnapshot))
@@ -169,7 +169,7 @@ void main() {
 
         when(() => mockCollectionReference.doc('XX'))
             .thenReturn(mockNonExistentDocRef);
-        when(() => mockNonExistentDocRef.get())
+        when(mockNonExistentDocRef.get)
             .thenAnswer((_) async => nonExistentStartAfterDoc);
 
         when(() => mockFirstPageSnapshot.docs).thenReturn([doc1, doc2]);
@@ -215,7 +215,7 @@ void main() {
       final countryData = {
         'iso_code': 'GB',
         'name': 'United Kingdom',
-        'flag_url': 'url_gb'
+        'flag_url': 'url_gb',
       };
       final country = Country.fromJson({...countryData, 'id': 'GB'});
       late MockDocumentReference mockDocumentReference;
@@ -246,11 +246,13 @@ void main() {
 
         expect(
           () => client.fetchCountry('GB'),
-          throwsA(isA<CountryNotFound>().having(
-            (e) => e.error,
-            'error message',
-            'Country with isoCode "GB" not found.',
-          )),
+          throwsA(
+            isA<CountryNotFound>().having(
+              (e) => e.error,
+              'error message',
+              'Country with isoCode "GB" not found.',
+            ),
+          ),
         );
         verify(() => mockCollectionReference.doc('GB')).called(1);
         verify(() => mockDocumentReference.get()).called(1);
@@ -258,8 +260,7 @@ void main() {
 
       test('throws CountryFetchFailure when document exists but data is null',
           () async {
-        final mockDocSnapshot =
-            createMockDocumentSnapshot('GB', null, exists: true);
+        final mockDocSnapshot = createMockDocumentSnapshot('GB', null);
         when(() => mockDocumentReference.get())
             .thenAnswer((_) async => mockDocSnapshot);
 
@@ -296,7 +297,7 @@ void main() {
       final countryData = {
         'iso_code': 'DE',
         'name': 'Germany',
-        'flag_url': 'url_de'
+        'flag_url': 'url_de',
       };
       final country = Country.fromJson({...countryData, 'id': 'DE'});
       late MockDocumentReference mockDocumentReference;
@@ -338,12 +339,12 @@ void main() {
       final countryData = {
         'iso_code': 'FR',
         'name': 'France',
-        'flag_url': 'url_fr'
+        'flag_url': 'url_fr',
       };
       final updatedData = {
         'iso_code': 'FR',
         'name': 'France Republic',
-        'flag_url': 'url_fr_new'
+        'flag_url': 'url_fr_new',
       };
       final country = Country.fromJson({...updatedData, 'id': 'FR'});
       late MockDocumentReference mockDocumentReference;
@@ -379,11 +380,13 @@ void main() {
 
         expect(
           () => client.updateCountry(country),
-          throwsA(isA<CountryNotFound>().having(
-            (e) => e.error,
-            'error message',
-            'Cannot update country with isoCode "FR": Not found.',
-          )),
+          throwsA(
+            isA<CountryNotFound>().having(
+              (e) => e.error,
+              'error message',
+              'Cannot update country with isoCode "FR": Not found.',
+            ),
+          ),
         );
 
         verify(() => mockCollectionReference.doc(country.isoCode)).called(1);
@@ -394,7 +397,9 @@ void main() {
       test('throws CountryUpdateFailure on Firestore error during get',
           () async {
         final exception = FirebaseException(
-            plugin: 'firestore', message: 'Get error for update');
+          plugin: 'firestore',
+          message: 'Get error for update',
+        );
         when(() => mockDocumentReference.get()).thenThrow(exception);
 
         expect(
@@ -461,11 +466,13 @@ void main() {
 
         expect(
           () => client.deleteCountry(isoCodeToDelete),
-          throwsA(isA<CountryNotFound>().having(
-            (e) => e.error,
-            'error message',
-            'Cannot delete country with isoCode "JP": Not found.',
-          )),
+          throwsA(
+            isA<CountryNotFound>().having(
+              (e) => e.error,
+              'error message',
+              'Cannot delete country with isoCode "JP": Not found.',
+            ),
+          ),
         );
 
         verify(() => mockCollectionReference.doc(isoCodeToDelete)).called(1);
@@ -476,7 +483,9 @@ void main() {
       test('throws CountryDeleteFailure on Firestore error during get',
           () async {
         final exception = FirebaseException(
-            plugin: 'firestore', message: 'Get error for delete');
+          plugin: 'firestore',
+          message: 'Get error for delete',
+        );
         when(() => mockDocumentReference.get()).thenThrow(exception);
 
         expect(

@@ -40,7 +40,8 @@ class HtCountriesFirestore implements HtCountriesClient {
         // We fetch the document corresponding to startAfterId first.
         // Note: Using iso_code as the document ID for simplicity here.
         // If 'id' is a separate field, adjust accordingly.
-        final startAfterDoc = await _countriesCollection.doc(startAfterId).get();
+        final startAfterDoc =
+            await _countriesCollection.doc(startAfterId).get();
         if (startAfterDoc.exists) {
           query = query.startAfterDocument(startAfterDoc);
         } else {
@@ -63,15 +64,7 @@ class HtCountriesFirestore implements HtCountriesClient {
         // ensure it's included. If 'id' is a separate field within the doc,
         // this merge might not be needed or should be adjusted.
         // Assuming Country.fromJson handles missing 'id' or uses iso_code.
-        if (data != null) {
-          return Country.fromJson({...data, 'id': doc.id});
-        } else {
-          // Handle cases where data is null for a document that exists.
-          // This might indicate a data consistency issue.
-          // Depending on requirements, could throw an error or skip the item.
-          // For now, let's throw to highlight the issue.
-          throw StateError('Document ${doc.id} has null data.');
-        }
+        return Country.fromJson({...data, 'id': doc.id});
       }).toList();
     } catch (e, s) {
       // Log the original error e and stack trace s
