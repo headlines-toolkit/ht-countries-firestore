@@ -6,8 +6,6 @@
 
 A Firestore implementation for the `ht_countries_client` interface, part of the Headlines Toolkit project. This package provides concrete methods for fetching, creating, updating, and deleting country data stored in Cloud Firestore.
 
-**Note:** This software is licensed under the [PolyForm Free Trial License 1.0.0](LICENSE). Use is permitted only for evaluating the software for less than 32 consecutive days.
-
 ## Features
 
 *   Implements the `HtCountriesClient` abstract class.
